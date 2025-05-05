@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+  account-app:
+    build:
+      context: .
+      dockerfile: apps/account-app/Dockerfile
+    ports:
+      - "4001:4001"
+    depends_on:
+      - postgres 
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=fameltest
+
+  transaction-app:
+    build:
+      context: .
+      dockerfile: apps/transaction-app/Dockerfile
+    ports:
+      - "4002:4002"
+    depends_on:
+      - account-app
+      - postgres 
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=fameltest
+
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: root 
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: fameltest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
